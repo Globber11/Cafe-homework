@@ -37,8 +37,10 @@ def check(pay_amo, pay_met, for_pay, pur, username):
     elif pay_met == 2:
         print(f'Метод оплаты: безналичная (банковской картой)')
         print(f'Оплачено товаров на: {for_pay} монет')
-    print(f'Номер чека: потом сделаю')
+    print(f'Номер чека: {check_number}')
     print('Приходите ещё!')
+with open('check_number.txt', 'r') as file:
+    check_number = file.read()
 user = input('Введите ваш username:')
 products = {1:'кофе', 2:'бутер', 3:'двойной бутер', 4:'добрый-пепси', 5:'бличики'}
 prices = {1:10, 2:10, 3:18, 4:14, 5:20}
@@ -85,5 +87,8 @@ with open("logs.txt", "a") as file:
     file.write(f'\nDouble sandwich {str(double_sandwich)}')
     file.write(f'\ndobry_pepsy {str(dobry_pepsy)}')
     file.write(f'\nPancakes {str(pancakes)}')
+    file.write(f'\nCheck number: {check_number}')
     file.write('\n')
     file.write('\n')
+with open('check_number.txt', 'w') as file:
+    file.write(str(int(check_number) + 1))
