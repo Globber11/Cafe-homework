@@ -45,18 +45,30 @@ user = input('Введите ваш username:')
 products = {1:'кофе', 2:'бутер', 3:'двойной бутер', 4:'добрый-пепси', 5:'бличики'}
 prices = {1:10, 2:10, 3:18, 4:14, 5:20}
 purchases = []
+errors = []
 choice = 0
 print('Выберите продукты для покупки: 1 - Кофе (цена 10 монет)    2 - Бутер (цена 10 монет)    3 - Двойной бутер (цена 18 монет)    4 - Газировка "Добрый-пепси" (цена 14 монет)    5 - Бличики (цена 20 монет), для завершения выбора введите 0')
 while True:
     try:
         choice = int(input('Номер товара:'))
         if choice == 0:
-            break
-        if choice > 5:
+            try:
+                if not purchases:
+                    a = 1/0
+                else:
+                    break
+            except ZeroDivisionError:
+                print("Ошибка корзины, корзина пуста, повторите попытку")
+                errors.append('The user tried to pay for an empty cart [the next error is a bug, it was registered due to this error, I will fix it later]')
+        if choice > 5 or choice < 1:
             a = 1/0
         purchases.append(choice)
-    except:
-        print("Ошибка ввода, повторите попытку")
+    except ZeroDivisionError:
+        print("Ошибка корзины, товар не существует, повторите попытку")
+        errors.append('The user requested a non-existent product')
+    except TypeError:
+        print('Ошибка корзины, вводить номер товара нужно как целое число от 1 до 5, повторите попытку')
+        errors.append('The user entered the item number incorrectly')
 for_payment = 0
 for _ in purchases:
     for_payment += prices.get(_)
@@ -65,16 +77,28 @@ while True:
     try:
         payment_method = int(input('Номер метода оплаты:'))
         if payment_method == 1:
-            payment_amount = int(input('Сколько отдать монет?:'))
-            if payment_amount < for_payment:
-                a = 1/0
+            try:
+                payment_amount = int(input('Сколько отдать монет?:'))
+                if payment_amount < for_payment:
+                    a = 1/0
+                break
+            except ValueError:
+                print('Ошибка оплаты, вводить сумму для оплаты нужно как целое положительное число, повторите попытку')
+                errors.append('The user entered the payment amount incorrectly')
+            except ZeroDivisionError:
+                print('Ошибка оплаты, вы отдали недостаточно монет, повторите попытку')
+                errors.append('The user has not given enough coins')
         elif payment_method == 2:
             payment_amount = for_payment
+            break
         else:
             a = 1/0
-        break
-    except:
-        print('Ошибка ввода, повторите попытку')
+    except ValueError:
+        print('Ошибка оплаты, вводить номер сособа олаты нужно как целое число от 1 до 2, повторите попытку')
+        errors.append('The user entered the payment method number incorrectly')
+    except ZeroDivisionError:
+        print('Ошибка оплаты, вводить номер сособа олаты нужно как целое число от 1 до 2, повторите попытку')
+        errors.append('The user entered the payment method number incorrectly')
 print(check())
 with open("logs.txt", "a") as file:
     file.write(f'Username: {str(user)}')
@@ -88,6 +112,7 @@ with open("logs.txt", "a") as file:
     file.write(f'\ndobry_pepsy {str(dobry_pepsy)}')
     file.write(f'\nPancakes {str(pancakes)}')
     file.write(f'\nCheck number: {check_number}')
+    file.write(f'\nErrors: {errors}')
     file.write('\n')
     file.write('\n')
 with open('check_number.txt', 'w') as file:
